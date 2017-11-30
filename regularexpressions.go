@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"regexp"
 )
 
 func main() {
@@ -26,6 +27,12 @@ func ElizaResponse(input string) string {
 		"I'm not sure what you're trying to say. Could you explain it to me?",
 		"How does that make you feel?",
 		"Why do you say that?",
+	}
+
+	regex, _ := regexp.Compile("father")
+
+	if regex.MatchString(input) {
+		return "Why don’t you tell me more about your father?"
 	}
 
 	return randomChoice(responses)
