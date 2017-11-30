@@ -13,6 +13,10 @@ func main() {
 		"I was my father’s favourite.",
 		"I’m looking forward to the weekend.",
 		"My grandfather was French!",
+		"I am happy.",
+		"I am not happy with your responses.",
+		"I am not sure that you understand the effect that your questions are having on me.",
+		"I am supposed to just take what you’re saying at face value?",
 	}
 
 	for i := 0; i < len(responses); i++ {
@@ -33,6 +37,12 @@ func ElizaResponse(input string) string {
 
 	if regex.MatchString(input) {
 		return "Why don’t you tell me more about your father?"
+	}
+
+	re := regexp.MustCompile(`(?i)i(?:'|\sa)?m (.*)`)
+
+	if re.MatchString(input) {
+		return re.ReplaceAllString(input, "How do you know you are $1?")
 	}
 
 	return randomChoice(responses)
