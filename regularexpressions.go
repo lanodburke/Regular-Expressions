@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"regexp"
+	"strings"
 )
 
 func main() {
@@ -25,6 +26,23 @@ func main() {
 	}
 }
 
+var reflection = map[string]string{
+	"am":     "are",
+	"was":    "were",
+	"i":      "you",
+	"i'd":    "you would",
+	"i've":   "you have",
+	"i'll":   "you will",
+	"my":     "your",
+	"are":    "am",
+	"you've": "I have",
+	"you'll": "I will",
+	"your":   "my",
+	"yours":  "mine",
+	"you":    "me",
+	"me":     "you",
+}
+
 // ElizaResponse takes a single string of input and returns a single string of output
 func ElizaResponse(input string) string {
 	var responses = []string{
@@ -40,12 +58,32 @@ func ElizaResponse(input string) string {
 	}
 
 	re := regexp.MustCompile(`(?i)i(?:'|\sa)?m (.*)`)
+	matched := re.FindStringSubmatch(input)
 
-	if re.MatchString(input) {
-		return re.ReplaceAllString(input, "How do you know you are $1?")
+	if len(matched) > 0 {
+		var res string
+		if len(matched) > 1 {
+			res = reflect(matched[1])
+		}
+
+		response := randomChoice(responses)
+		if strings.Contains(response, "%s") {
+			response = fmt.Sprintf(response, res)
+		}
+		return response
 	}
 
 	return randomChoice(responses)
+}
+
+func reflect(input string) string {
+	words := strings.Split(input, " ")
+	for i, word := range words {
+		if reflected, ok := reflection[word]; ok {
+			words[i] = reflected
+		}
+	}
+	return strings.Join(words, " ")
 }
 
 // returns a random string from a list of strings
