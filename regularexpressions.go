@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	var responses = []string{
+	var questions = []string{
+		"Hello!",
 		"People say I look like both my mother and father.",
 		"Father was a teacher.",
 		"I was my father’s favourite.",
@@ -18,11 +19,12 @@ func main() {
 		"I am not happy with your responses.",
 		"I am not sure that you understand the effect that your questions are having on me.",
 		"I am supposed to just take what you’re saying at face value?",
+		"Goodbye",
 	}
 
-	for i := 0; i < len(responses); i++ {
-		fmt.Println(responses[i])
-		fmt.Println(ElizaResponse(responses[i]))
+	for i := 0; i < len(questions); i++ {
+		fmt.Println("[You]: " + questions[i])
+		fmt.Println("[Eliza]: " + ElizaResponse(questions[i]))
 	}
 }
 
@@ -43,6 +45,19 @@ var reflection = map[string]string{
 	"me":     "you",
 }
 
+var greetings = []string{
+	"Hello how are you?",
+	"Good day to you sir!",
+	"Buenos Dias!",
+	"Dia dhuit",
+}
+
+var goodbyes = []string{
+	"Goodbye!",
+	"It was nice talking to you",
+	"Lets do this again sometime",
+}
+
 // ElizaResponse takes a single string of input and returns a single string of output
 func ElizaResponse(input string) string {
 	var responses = []string{
@@ -50,11 +65,28 @@ func ElizaResponse(input string) string {
 		"How does that make you feel?",
 		"Why do you say that?",
 	}
+	var patterns = map[string][]string{
+		`(?i).*\bfather\b.*`: {
+			"Why don’t you tell me more about your father?",
+		},
+		`(?i).*\bhello\b.*`: {
+			"Hello how are you?",
+			"Good day to you sir!",
+			"Buenos Dias!",
+			"Dia dhuit",
+		},
+		`(?i).*\bgoodbye\b.*`: {
+			"Goodbye!",
+			"It was nice talking to you",
+			"Lets do this again sometime",
+		},
+	}
 
-	regex, _ := regexp.Compile("father")
-
-	if regex.MatchString(input) {
-		return "Why don’t you tell me more about your father?"
+	for pattern, res := range patterns {
+		re := regexp.MustCompile(pattern)
+		if re.MatchString(input) {
+			return randomChoice(res)
+		}
 	}
 
 	re := regexp.MustCompile(`(?i)i(?:'|\sa)?m (.*)`)
